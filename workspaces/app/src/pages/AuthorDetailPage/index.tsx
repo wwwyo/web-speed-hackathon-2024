@@ -2,7 +2,6 @@ import { Suspense, useId } from 'react';
 import { useParams } from 'react-router-dom';
 import type { RouteParams } from 'regexparam';
 import { styled } from 'styled-components';
-import invariant from 'tiny-invariant';
 
 import { useAuthor } from '../../features/author/hooks/useAuthor';
 import { BookListItem } from '../../features/book/components/BookListItem';
@@ -33,7 +32,9 @@ const _AuthorImageWrapper = styled.div`
 
 const AuthorDetailPage: React.FC = () => {
   const { authorId } = useParams<RouteParams<'/authors/:authorId'>>();
-  invariant(authorId);
+  if (!authorId) {
+    throw new Error('authorId is required');
+  }
 
   const { data: author } = useAuthor({ params: { authorId } });
 
