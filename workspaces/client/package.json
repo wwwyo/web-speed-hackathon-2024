@@ -12,7 +12,6 @@
     "@jsquash/jxl": "1.1.0",
     "@wsh-2024/admin": "workspace:*",
     "@wsh-2024/app": "workspace:*",
-    "fzstd": "0.1.0",
     "jimp": "0.22.12",
     "p-queue": "8.0.1",
     "react": "18.2.0",
