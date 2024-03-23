@@ -5,7 +5,7 @@ import { Flex } from '../../../foundation/components/Flex';
 import { Image } from '../../../foundation/components/Image';
 import { Link } from '../../../foundation/components/Link';
 import { Text } from '../../../foundation/components/Text';
-import { useImage } from '../../../foundation/hooks/useImage';
+import { useImageV2 } from '../../../foundation/hooks/useImagev2';
 import { Color, Radius, Space, Typography } from '../../../foundation/styles/variables';
 import { useBook } from '../../book/hooks/useBook';
 
@@ -50,14 +50,14 @@ type Props = {
 const FeatureCard: React.FC<Props> = ({ bookId }) => {
   const { data: book } = useBook({ params: { bookId } });
 
-  const imageUrl = useImage({ height: 96, imageId: book.image.id, width: 96 });
-  const authorImageUrl = useImage({ height: 32, imageId: book.author.image.id, width: 32 });
+  const imageUrl = useImageV2({ height: 96, imageId: book.image.id, width: 96 });
+  const authorImageUrl = useImageV2({ height: 32, imageId: book.author.image.id, width: 32 });
 
   return (
     <_Wrapper href={`/books/${bookId}`}>
       {imageUrl != null && (
         <_ImgWrapper>
-          <Image alt={book.image.alt} height={96} objectFit="cover" src={imageUrl} width={96} />
+          <Image alt={book.image.alt} height={96} loading={undefined} objectFit="cover" src={imageUrl} width={96} />
         </_ImgWrapper>
       )}
 
