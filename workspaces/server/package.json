@@ -6,6 +6,7 @@
     "build:clean": "rm -rf ./dist",
     "build:copy": "cp -r ./seeds/images ./dist/images",
     "build:tsup": "tsup",
+    "dev": "nodemon --watch 'src/**/*' --exec 'pnpm build && pnpm start'",
     "start": "node ./dist/server.js"
   },
   "dependencies": {
