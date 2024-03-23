@@ -6,7 +6,7 @@ import type { GetEpisodeRequestParams } from '@wsh-2024/schema/src/api/episodes/
 import type { GetEpisodeResponse } from '@wsh-2024/schema/src/api/episodes/GetEpisodeResponse';
 
 import type { DomainSpecificApiClientInterface } from '../../../lib/api/DomainSpecificApiClientInterface';
-import { apiClient } from '../../../lib/api/apiClient';
+import { fetchApi } from '../../../lib/api/apiClient';
 
 type EpisodeApiClient = DomainSpecificApiClientInterface<{
   fetch: [{ params: GetEpisodeRequestParams }, GetEpisodeResponse];
@@ -15,18 +15,14 @@ type EpisodeApiClient = DomainSpecificApiClientInterface<{
 
 export const episodeApiClient: EpisodeApiClient = {
   fetch: async ({ params }) => {
-    const response = await apiClient.get<GetEpisodeResponse>(inject('/api/v1/episodes/:episodeId', params));
-    return response.data;
+    return await fetchApi<GetEpisodeResponse>(inject('/api/v1/episodes/:episodeId', params));
   },
   fetch$$key: (options) => ({
     requestUrl: `/api/v1/episodes/:episodeId`,
     ...options,
   }),
   fetchList: async ({ query }) => {
-    const response = await apiClient.get<GetEpisodeListResponse>(inject('/api/v1/episodes', {}), {
-      params: query,
-    });
-    return response.data;
+    return await fetchApi<GetEpisodeListResponse>(inject('/api/v1/episodes', {}), query);
   },
   fetchList$$key: (options) => ({
     requestUrl: `/api/v1/episodes`,

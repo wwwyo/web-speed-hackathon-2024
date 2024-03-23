@@ -4,7 +4,7 @@ import type { GetRankingListRequestQuery } from '@wsh-2024/schema/src/api/rankin
 import type { GetRankingListResponse } from '@wsh-2024/schema/src/api/rankings/GetRankingListResponse';
 
 import type { DomainSpecificApiClientInterface } from '../../../lib/api/DomainSpecificApiClientInterface';
-import { apiClient } from '../../../lib/api/apiClient';
+import { fetchApi } from '../../../lib/api/apiClient';
 
 type RankingApiClient = DomainSpecificApiClientInterface<{
   fetchList: [{ query: GetRankingListRequestQuery }, GetRankingListResponse];
@@ -12,10 +12,7 @@ type RankingApiClient = DomainSpecificApiClientInterface<{
 
 export const rankingApiClient: RankingApiClient = {
   fetchList: async ({ query }) => {
-    const response = await apiClient.get<GetRankingListResponse>(inject('/api/v1/rankings', {}), {
-      params: query,
-    });
-    return response.data;
+    return await fetchApi<GetRankingListResponse>(inject('/api/v1/rankings', {}), query);
   },
   fetchList$$key: (options) => ({
     requestUrl: `/api/v1/rankings`,

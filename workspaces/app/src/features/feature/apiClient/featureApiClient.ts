@@ -4,7 +4,7 @@ import type { GetFeatureListRequestQuery } from '@wsh-2024/schema/src/api/featur
 import type { GetFeatureListResponse } from '@wsh-2024/schema/src/api/features/GetFeatureListResponse';
 
 import type { DomainSpecificApiClientInterface } from '../../../lib/api/DomainSpecificApiClientInterface';
-import { apiClient } from '../../../lib/api/apiClient';
+import { fetchApi } from '../../../lib/api/apiClient';
 
 type FeatureApiClient = DomainSpecificApiClientInterface<{
   fetchList: [{ query: GetFeatureListRequestQuery }, GetFeatureListResponse];
@@ -12,10 +12,7 @@ type FeatureApiClient = DomainSpecificApiClientInterface<{
 
 export const featureApiClient: FeatureApiClient = {
   fetchList: async ({ query }) => {
-    const response = await apiClient.get<GetFeatureListResponse>(inject('/api/v1/features', {}), {
-      params: query,
-    });
-    return response.data;
+    return await fetchApi<GetFeatureListResponse>(inject('/api/v1/features', {}), query);
   },
   fetchList$$key: (options) => ({
     requestUrl: `/api/v1/features`,

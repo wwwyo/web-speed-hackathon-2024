@@ -6,7 +6,7 @@ import type { GetAuthorRequestParams } from '@wsh-2024/schema/src/api/authors/Ge
 import type { GetAuthorResponse } from '@wsh-2024/schema/src/api/authors/GetAuthorResponse';
 
 import type { DomainSpecificApiClientInterface } from '../../../lib/api/DomainSpecificApiClientInterface';
-import { apiClient } from '../../../lib/api/apiClient';
+import { fetchApi } from '../../../lib/api/apiClient';
 
 type AuthorApiClient = DomainSpecificApiClientInterface<{
   fetch: [{ params: GetAuthorRequestParams }, GetAuthorResponse];
@@ -15,18 +15,14 @@ type AuthorApiClient = DomainSpecificApiClientInterface<{
 
 export const authorApiClient: AuthorApiClient = {
   fetch: async ({ params }) => {
-    const response = await apiClient.get<GetAuthorResponse>(inject('/api/v1/authors/:authorId', params));
-    return response.data;
+    return await fetchApi<GetAuthorResponse>(inject('/api/v1/authors/:authorId', params));
   },
   fetch$$key: (options) => ({
     requestUrl: `/api/v1/authors/:authorId`,
     ...options,
   }),
   fetchList: async ({ query }) => {
-    const response = await apiClient.get<GetAuthorListResponse>(inject('/api/v1/authors', {}), {
-      params: query,
-    });
-    return response.data;
+    return await fetchApi<GetAuthorListResponse>(inject('/api/v1/authors', {}), query);
   },
   fetchList$$key: (options) => ({
     requestUrl: `/api/v1/authors`,

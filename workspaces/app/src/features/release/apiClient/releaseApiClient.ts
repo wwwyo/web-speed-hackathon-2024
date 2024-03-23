@@ -4,7 +4,7 @@ import type { GetReleaseRequestParams } from '@wsh-2024/schema/src/api/releases/
 import type { GetReleaseResponse } from '@wsh-2024/schema/src/api/releases/GetReleaseResponse';
 
 import type { DomainSpecificApiClientInterface } from '../../../lib/api/DomainSpecificApiClientInterface';
-import { apiClient } from '../../../lib/api/apiClient';
+import { fetchApi } from '../../../lib/api/apiClient';
 
 type ReleaseApiClient = DomainSpecificApiClientInterface<{
   fetch: [{ params: GetReleaseRequestParams }, GetReleaseResponse];
@@ -12,8 +12,7 @@ type ReleaseApiClient = DomainSpecificApiClientInterface<{
 
 export const releaseApiClient: ReleaseApiClient = {
   fetch: async ({ params }) => {
-    const response = await apiClient.get<GetReleaseResponse>(inject('/api/v1/releases/:dayOfWeek', params));
-    return response.data;
+    return await fetchApi<GetReleaseResponse>(inject('/api/v1/releases/:dayOfWeek', params));
   },
   fetch$$key: (options) => ({
     requestUrl: `/api/v1/releases/:dayOfWeek`,
