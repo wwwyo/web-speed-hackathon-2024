@@ -5,7 +5,8 @@
     "build": "pnpm run build:clean && pnpm run build:tsup && pnpm run build:copy",
     "build:clean": "rm -rf ./dist",
     "build:copy": "cp -r ./assets ./dist/assets",
-    "build:tsup": "tsup"
+    "build:tsup": "tsup",
+    "dev": "nodemon --watch '../{admin,app}/src/**/*' --ext 'ts,tsx,json' --exec 'pnpm build'"
   },
   "dependencies": {
     "@jsquash/jxl": "1.1.0",
@@ -37,6 +38,7 @@
     "@types/react-dom": "18.2.1",
     "@types/serviceworker": "0.0.83",
     "esbuild-plugin-polyfill-node": "0.3.0",
+    "nodemon": "3.1.0",
     "pkg-dir": "5.0.0",
     "tsup": "8.0.1"
   }

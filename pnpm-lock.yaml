@@ -278,6 +278,9 @@ importers:
       esbuild-plugin-polyfill-node:
         specifier: 0.3.0
         version: 0.3.0(esbuild@0.19.11)
+      nodemon:
+        specifier: 3.1.0
+        version: 3.1.0
       pkg-dir:
         specifier: 5.0.0
         version: 5.0.0
