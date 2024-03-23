@@ -1,7 +1,8 @@
 import { animated, useSpring } from '@react-spring/web';
-import { useCallback } from 'react';
+import { useAtom } from 'jotai';
 import { styled } from 'styled-components';
 
+import { FavoriteBookAtomFamily } from '../../../features/book/atoms/FavoriteBookAtomFamily';
 import { Link } from '../../../foundation/components/Link';
 import { Color, Radius, Space } from '../../../foundation/styles/variables';
 
@@ -37,26 +38,22 @@ const _ReadLink = styled(Link)`
 
 type Props = {
   bookId: string;
-  isFavorite: boolean;
   latestEpisodeId: string;
-  onClickFav: () => void;
 };
 
-export const BottomNavigator: React.FC<Props> = ({ bookId, isFavorite, latestEpisodeId, onClickFav }) => {
+export const BottomNavigator: React.FC<Props> = ({ bookId, latestEpisodeId }) => {
   const props = useSpring({
     from: { transform: 'translateY(100%)' },
     to: { transform: 'translateY(0)' },
   });
 
-  const handleFavClick = useCallback(() => {
-    onClickFav();
-  }, [onClickFav]);
+  const [isFavorite, toggleFavorite] = useAtom(FavoriteBookAtomFamily(bookId));
 
   return (
     <_Wrapper>
       <animated.div style={props}>
         <_Content>
-          <FavButton enabled={isFavorite} onClick={handleFavClick} />
+          <FavButton enabled={isFavorite} onClick={toggleFavorite} />
           <_ReadLink to={`/books/${bookId}/episodes/${latestEpisodeId}`}>最新話を読む</_ReadLink>
         </_Content>
       </animated.div>
