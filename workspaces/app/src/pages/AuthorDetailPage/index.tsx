@@ -1,3 +1,4 @@
+import type { FC } from 'react';
 import { Suspense, useId } from 'react';
 import { useParams } from 'react-router-dom';
 import type { RouteParams } from 'regexparam';
@@ -11,7 +12,7 @@ import { Image } from '../../foundation/components/Image';
 import { Separator } from '../../foundation/components/Separator';
 import { Spacer } from '../../foundation/components/Spacer';
 import { Text } from '../../foundation/components/Text';
-import { useImage } from '../../foundation/hooks/useImage';
+import { useImageV2 } from '../../foundation/hooks/useImagev2';
 import { Color, Space, Typography } from '../../foundation/styles/variables';
 
 const _HeadingWrapper = styled.section`
@@ -22,6 +23,18 @@ const _HeadingWrapper = styled.section`
   gap: ${Space * 2}px;
 `;
 
+const _FallbackHeadingContent = styled.div`
+  width: 100%;
+  height: 128px;
+  background: ${Color.MONO_10};
+`;
+
+const _FallbackEpisodeContent = styled.div`
+  width: 100%;
+  height: 2492px;
+  background: ${Color.MONO_10};
+`;
+
 const _AuthorImageWrapper = styled.div`
   width: 128px;
   height: 128px;
@@ -30,34 +43,20 @@ const _AuthorImageWrapper = styled.div`
   }
 `;
 
-const AuthorDetailPage: React.FC = () => {
+export const AuthorDetailPage: React.FC = () => {
   const { authorId } = useParams<RouteParams<'/authors/:authorId'>>();
   if (!authorId) {
     throw new Error('authorId is required');
   }
 
-  const { data: author } = useAuthor({ params: { authorId } });
-
-  const imageUrl = useImage({ height: 128, imageId: author.image.id, width: 128 });
   const bookListA11yId = useId();
 
   return (
     <Box height="100%" px={Space * 2}>
       <_HeadingWrapper aria-label="作者情報">
-        {imageUrl != null && (
-          <_AuthorImageWrapper>
-            <Image key={author.id} alt={author.name} height={128} objectFit="cover" src={imageUrl} width={128} />
-          </_AuthorImageWrapper>
-        )}
-
-        <Flex align="flex-start" direction="column" gap={Space * 1} justify="flex-start">
-          <Text color={Color.MONO_100} typography={Typography.NORMAL20} weight="bold">
-            {author.name}
-          </Text>
-          <Text as="p" color={Color.MONO_100} typography={Typography.NORMAL14}>
-            {author.description}
-          </Text>
-        </Flex>
+        <Suspense fallback={<_FallbackHeadingContent />}>
+          <Header authorId={authorId} />
+        </Suspense>
       </_HeadingWrapper>
 
       <Separator />
@@ -70,29 +69,57 @@ const AuthorDetailPage: React.FC = () => {
         <Spacer height={Space * 2} />
 
         <Flex align="center" as="ul" direction="column" justify="center">
-          {author.books.map((book) => (
-            <BookListItem key={book.id} bookId={book.id} />
-          ))}
-          {author.books.length === 0 && (
-            <>
-              <Spacer height={Space * 2} />
-              <Text color={Color.MONO_100} typography={Typography.NORMAL14}>
-                この作者の作品はありません
-              </Text>
-            </>
-          )}
+          <Suspense fallback={<_FallbackEpisodeContent />}>
+            <AuthorBooks authorId={authorId} />
+          </Suspense>
         </Flex>
       </Box>
     </Box>
   );
 };
 
-const AuthorDetailPageWithSuspense: React.FC = () => {
+const Header: FC<{ authorId: string }> = ({ authorId }) => {
+  const { data: author } = useAuthor({ params: { authorId } });
+  const imageUrl = useImageV2({ height: 128, imageId: author.image.id, width: 128 });
+
   return (
-    <Suspense fallback={null}>
-      <AuthorDetailPage />
-    </Suspense>
+    <>
+      {imageUrl != null && (
+        <_AuthorImageWrapper>
+          <Image key={author.id} alt={author.name} height={128} objectFit="cover" src={imageUrl} width={128} />
+        </_AuthorImageWrapper>
+      )}
+
+      <Flex align="flex-start" direction="column" gap={Space * 1} justify="flex-start">
+        <Text color={Color.MONO_100} typography={Typography.NORMAL20} weight="bold">
+          {author.name}
+        </Text>
+        <Text as="p" color={Color.MONO_100} typography={Typography.NORMAL14}>
+          {author.description}
+        </Text>
+      </Flex>
+    </>
   );
 };
 
-export { AuthorDetailPageWithSuspense as AuthorDetailPage };
+const AuthorBooks: FC<{
+  authorId: string;
+}> = ({ authorId }) => {
+  const { data: author } = useAuthor({ params: { authorId } });
+
+  return (
+    <>
+      {author.books.map((book) => (
+        <BookListItem key={book.id} book={book} />
+      ))}
+      {author.books.length === 0 && (
+        <>
+          <Spacer height={Space * 2} />
+          <Text color={Color.MONO_100} typography={Typography.NORMAL14}>
+            この作者の作品はありません
+          </Text>
+        </>
+      )}
+    </>
+  );
+};
