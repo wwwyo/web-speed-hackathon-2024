@@ -65,20 +65,24 @@ app.get(
   async (c) => {
     const { globby } = await import('globby');
 
-    const origFileGlob = [path.resolve(IMAGES_PATH, `${c.req.valid('param').imageFile}.*`)];
-    const [origFilePath] = await globby(origFileGlob, { absolute: true, onlyFiles: true });
-    if (origFilePath == null) {
+    const origFileGlob = [
+      path.resolve(IMAGES_PATH, `${c.req.valid('param').imageFile}.*.${c.req.valid('query').format}`),
+      path.resolve(IMAGES_PATH, `${c.req.valid('param').imageFile}.*`),
+    ];
+    const [origFilePath, convertPath] = await globby(origFileGlob, { absolute: true, onlyFiles: true });
+    const resPath = convertPath ?? origFilePath;
+    if (resPath == null) {
       throw new HTTPException(404, { message: 'Not found.' });
     }
 
-    const origImgFormat = path.extname(origFilePath).slice(1);
+    const origImgFormat = path.extname(resPath).slice(1);
     if (!isSupportedImageFormat(origImgFormat)) {
       throw new HTTPException(500, { message: 'Failed to load image.' });
     }
 
     // 圧縮せずにストリームでそのまま返す
     c.header('Content-Type', IMAGE_MIME_TYPE[origImgFormat as SupportedImageExtension]);
-    return c.body(createStreamBody(createReadStream(origFilePath)));
+    return c.body(createStreamBody(createReadStream(resPath)));
   },
 );
 
