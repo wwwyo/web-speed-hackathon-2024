@@ -58,9 +58,9 @@ export default defineConfig(async (): Promise<Options[]> => {
       outDir: OUTPUT_DIR,
       platform: 'browser',
       shims: true, // cjsのモジュールが使えるようになる
-      sourcemap: true,
+      sourcemap: false,
       splitting: true,
-      target: ['chrome58', 'firefox57', 'safari11', 'edge18'],
+      target: ['chrome134'],
       treeshake: true,
     },
   ];
